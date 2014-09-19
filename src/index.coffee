@@ -1,4 +1,6 @@
 fs = require 'fs'
+tmp = require 'tmp'
+{exec} = require 'child_process'
 
 exports.getRgbColor = getRgbColor = (r, g, b) ->
   "rgb<#{r}, #{g}, #{b}>"
@@ -11,6 +13,37 @@ exports.getProps = getProps = (props) ->
 
 exports.getPos = getPos = (pos) ->
   '<' + pos.join(',') + '>'
+
+getParams = (opts) ->
+  p = []
+  if opts.highQuality
+    p.push '+A0.0001'
+    p.push '+R9'
+    opts.width = 1920
+    opts.height = 1080
+  if opts.mediumQuality
+    p.push '+A0.001'
+    opts.width = 1920
+    opts.height = 1080
+  p.push '+W' + (opts.width or 960)
+  p.push '+H' + (opts.height or 540)
+  p.push '+O' + (opts.output or 'output.png')
+  p
+
+exports.render = render = (worldStr, opts, cb) ->
+  tmp.file {postfix: '.pov'}, (err, path, fd, cleanUpCb) ->
+    return cb err if err
+    cmd = 'povray ' + getParams(opts).join(' ') + ' ' + path
+    fs.writeFile path, worldStr, (err) ->
+      if err
+        cleanUpCb()
+        return cb err
+      exec cmd, (err, stdout, stderr) ->
+        cleanUpCb()
+        if err
+          process.stdout.write stdout + stderr
+          return cb err
+        cb()
 
 exports.Sphere = class Sphere
   constructor: ->
@@ -113,13 +146,16 @@ plane {
 
 main = ->
   world = new World header
-  for i in [1 .. 20]
+  for i in [1 .. 6000]
     world.newSphere [
-      (Math.random() - 0.5) * 16
-      (Math.random() - 0.5) * 8
-      20 + (Math.random() * 3)
+      (Math.random() - 0.5) * 100
+      (Math.random() - 0.5) * 60
+      60 + (Math.random() * 20)
     ], 1
-  str = world.toString()
-  fs.writeFileSync __dirname + '/../b.pov', str
+  opts =
+    output: __dirname + '/../private/out.png'
+    #mediumQuality: true
+  render world.toString(), opts, (err) ->
+    throw err if err
 
 main()
