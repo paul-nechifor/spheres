@@ -86,13 +86,15 @@ global_settings { assumed_gamma 1.0 }
 #include "textures.inc"
 
 camera {
-  location  <0.0, 0.0, 0.0>
-  look_at <0.0, 0.0, 10.0>
+  location  <0.0, 0.0, 20.0>
+  look_at <0.0, 0.0, 200.0>
   right x*image_width/image_height
   angle 75
 }
 
 light_source{<1500,3000,-2500> color White}
+
+/* background { color rgb <1, 1, 1> } */
 
 /*
 fog {
@@ -130,14 +132,15 @@ plane {
 
 main = ->
   world = new World header
-  for i in [1 .. 10000]
+  for i in [1 .. 60000]
     xr = Math.random()
+    zr = Math.random()
     pos = [
-      (xr - 0.5) * 100
+      (xr - 0.5) * 80 + zr * 10
       (Math.random() - 0.5) * 60
-      60 + (Math.random() * 40)
+      60 + (zr * 120)
     ]
-    h = 240 + xr * 120
+    h = ((xr - 0.22 * Math.random()) * 360 + 360) % 360
     c = Color h: h, s: 100, l: 50
     color = c.rgbArray().map (c) -> c / 255
     world.spheres.push new Sphere pos, 1, color
