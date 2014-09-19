@@ -1,9 +1,10 @@
 fs = require 'fs'
 tmp = require 'tmp'
 {exec} = require 'child_process'
+Color = require 'color'
 
-exports.getRgbColor = getRgbColor = (r, g, b) ->
-  "rgb<#{r}, #{g}, #{b}>"
+exports.getRgbColor = getRgbColor = (c) ->
+  "rgb<#{c.join ', '}>"
 
 exports.getProps = getProps = (props) ->
   list = []
@@ -46,22 +47,9 @@ exports.render = render = (worldStr, opts, cb) ->
         cb()
 
 exports.Sphere = class Sphere
-  constructor: ->
-    @pos = [0, 0, 0]
-    @radius = 1
-
-  toString: (formStr) -> """
-      sphere {
-        #{getPos @pos}, #{@radius}
-        #{formStr}
-      }
-
-    """
-
-exports.SphereForm = class SphereForm
-  constructor: ->
+  constructor: (@pos, @radius, color) ->
     @pigment =
-      color: getRgbColor 1, 0, 0
+      color: getRgbColor color
     @finish =
       ambient: 0.25
       diffuse: 0.4
@@ -69,9 +57,12 @@ exports.SphereForm = class SphereForm
       roughness: 0.008
       reflection: 0.4
 
-  toString: -> """
-      pigment { #{getProps @pigment} }
-      finish { #{getProps @finish} }
+  toString: (formStr) -> """
+      sphere {
+        #{getPos @pos}, #{@radius}
+        pigment { #{getProps @pigment} }
+        finish { #{getProps @finish} }
+      }
 
     """
 
@@ -83,15 +74,8 @@ exports.World = class World
     @header + @renderSpheres()
 
   renderSpheres: ->
-    f = new SphereForm
-    list = @spheres.map (s) -> s.toString f
+    list = @spheres.map (s) -> s.toString()
     list.join '\n'
-
-  newSphere: (pos, radius) ->
-    s = new Sphere
-    s.pos = pos
-    s.radius = radius
-    @spheres.push s
 
 header = """
 #version 3.6;
@@ -146,15 +130,20 @@ plane {
 
 main = ->
   world = new World header
-  for i in [1 .. 6000]
-    world.newSphere [
-      (Math.random() - 0.5) * 100
+  for i in [1 .. 10000]
+    xr = Math.random()
+    pos = [
+      (xr - 0.5) * 100
       (Math.random() - 0.5) * 60
-      60 + (Math.random() * 20)
-    ], 1
+      60 + (Math.random() * 40)
+    ]
+    h = 240 + xr * 120
+    c = Color h: h, s: 100, l: 50
+    color = c.rgbArray().map (c) -> c / 255
+    world.spheres.push new Sphere pos, 1, color
   opts =
     output: __dirname + '/../private/out.png'
-    #mediumQuality: true
+    mediumQuality: true
   render world.toString(), opts, (err) ->
     throw err if err
 
