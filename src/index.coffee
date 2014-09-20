@@ -20,8 +20,8 @@ getParams = (opts) ->
   if opts.highQuality
     p.push '+A0.0001'
     p.push '+R9'
-    opts.width = 1920
-    opts.height = 1080
+    opts.width = 1920 * 2
+    opts.height = 1080 * 2
   if opts.mediumQuality
     p.push '+A0.001'
     opts.width = 1920
@@ -134,19 +134,25 @@ main = ->
   world = new World header
   for i in [1 .. 60000]
     xr = Math.random()
+    yr = Math.random()
     zr = Math.random()
     pos = [
       (xr - 0.5) * 80 + zr * 10
-      (Math.random() - 0.5) * 60
+      (yr - 0.5) * 60
       60 + (zr * 120)
     ]
     h = ((xr - 0.22 * Math.random()) * 360 + 360) % 360
     c = Color h: h, s: 100, l: 50
     color = c.rgbArray().map (c) -> c / 255
-    world.spheres.push new Sphere pos, 1, color
+    l = 0.2
+    size = (1 - Math.abs(xr - 0.5)) * l +
+        (1 - Math.abs(yr - 0.5)) * l +
+        (1 - Math.abs(zr - 0.5)) * l
+    world.spheres.push new Sphere pos, size, color
   opts =
     output: __dirname + '/../private/out.png'
-    mediumQuality: true
+    #mediumQuality: true
+    highQuality: true
   render world.toString(), opts, (err) ->
     throw err if err
 
