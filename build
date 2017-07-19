@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+main() {
+    cd "$(dirname "${BASH_SOURCE[0]}")"
+
+    if ! docker_exists spheres; then
+        docker build -t spheres .
+    fi
+
+    docker run -it --rm -v "$(pwd)"/src:/spheres/src -v "$(pwd)"/output:/spheres/output spheres npm run build
+}
+
+docker_exists() {
+    [[ $(docker images -q "$1" 2>/dev/null) != "" ]]
+}
+
+main "$@"

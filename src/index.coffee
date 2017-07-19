@@ -24,8 +24,6 @@ getParams = (opts) ->
     opts.height = 1080 * 2
   if opts.mediumQuality
     p.push '+A0.001'
-    opts.width = 1920
-    opts.height = 1080
   p.push '+W' + (opts.width or 960)
   p.push '+H' + (opts.height or 540)
   p.push '+O' + (opts.output or 'output.png')
@@ -150,8 +148,8 @@ main = ->
         (1 - Math.abs(zr - 0.5)) * l
     world.spheres.push new Sphere pos, size, color
   opts =
-    output: __dirname + '/../private/out.png'
-    #mediumQuality: true
+    output: __dirname + '/../output/spheres.png'
+    # mediumQuality: true
     highQuality: true
   render world.toString(), opts, (err) ->
     throw err if err

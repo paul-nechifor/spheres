@@ -4,9 +4,10 @@
   "author": "Paul Nechifor <paul@nechifor.net> (http://nechifor.net/)",
   "main": "./lib",
   "scripts": {
-    "postinstall": "rm -fr lib; mkdir lib; coffee -cbo lib src"
+    "build": "coffee src/index.coffee"
   },
   "dependencies": {
+    "coffee-script": "^1.12.7",
     "color": "^0.7.1",
     "tmp": "0.0.24"
   },
