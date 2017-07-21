@@ -18,14 +18,14 @@ exports.getPos = getPos = (pos) ->
 getParams = (opts) ->
   p = []
   if opts.highQuality
-    p.push '+A0.0001'
-    p.push '+R9'
-    opts.width = 1920 * 2
-    opts.height = 1080 * 2
-  if opts.mediumQuality
     p.push '+A0.001'
-  p.push '+W' + (opts.width or 960)
-  p.push '+H' + (opts.height or 540)
+    p.push '+R9'
+    opts.width = 2560
+    opts.height = 1440
+  if opts.mediumQuality
+    p.push '+A0.1'
+  p.push '+W' + (opts.width or 1000)
+  p.push '+H' + (opts.height or 800)
   p.push '+O' + (opts.output or 'output.png')
   p
 
@@ -53,7 +53,7 @@ exports.Sphere = class Sphere
       diffuse: 0.4
       specular: 0.3
       roughness: 0.008
-      reflection: 0.4
+      reflection: 0.25
 
   toString: (formStr) -> """
       sphere {

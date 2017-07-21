@@ -8,6 +8,8 @@ Run:
 
     ./build
 
+That will take more time than you can possibly imagine.
+
 ## License
 
 MIT
