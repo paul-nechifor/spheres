@@ -1,3 +1,7 @@
+# This repository has been moved to [gitlab.com/paul-nechifor/spheres](http://gitlab.com/paul-nechifor/spheres).
+
+Old readme:
+
 # Spheres
 
 ![screenshot](screenshot.jpg)
